@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}TraVibe{% endblock %}</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-full bg-slate-50 text-slate-900">
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-20 border-b bg-white/80 backdrop-blur">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+      <a href="{% url 'countries' %}" class="flex items-center gap-2 font-semibold">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white">T</span>
+        <span>TraVibe</span>
+      </a>
+
+      <nav class="flex items-center gap-2">
+        <a href="{% url 'countries' %}" class="rounded-xl px-3 py-2 text-sm hover:bg-slate-100">
+          Explore
+        </a>
+        <a href="/admin/" class="rounded-xl border bg-white px-3 py-2 text-sm shadow-sm hover:bg-slate-50">
+          Admin
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="mx-auto max-w-6xl px-4 py-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-6 text-xs text-slate-500">
+      Built for inclusive travel • TraVibe
+    </div>
+  </footer>
+</body>
+</html>
