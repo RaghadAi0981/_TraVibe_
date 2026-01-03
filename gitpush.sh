@@ -7,7 +7,7 @@ if [ -z "$1" ]; then
 fi
 
 git add .
-git commit -m "message: $1"
+git commit -m ": $1"
 git push
 # chmod +x gitpush.sh
 # ./gitpush.sh "Your commit message"    
