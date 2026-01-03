@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Edit Location · {{ place.name }} · TraVibe{% endblock %}
+<a href="{% url 'add_place' city.id %}"
+   class="mb-4 inline-flex items-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-800">
+  ➕ Add Place (Map Search)
+</a>
 
 {% block content %}
 <div class="mb-6">
@@ -10,23 +14,20 @@
   </div>
 
   <h1 class="mt-3 text-3xl font-semibold tracking-tight">📍 Edit location</h1>
-  <p class="mt-1 text-slate-600">Search and select the correct map location.</p>
+  <p class="mt-1 text-slate-600">Search and choose the correct location.</p>
 </div>
 
 <form method="get" class="mb-4 flex flex-wrap gap-2">
-  <input
-    type="text"
-    name="q"
-    value="{{ q }}"
-    placeholder="Search (e.g., exact name + city)"
-    class="w-full sm:w-[420px] rounded-xl border bg-white px-4 py-2 text-sm shadow-sm focus:outline-none focus:ring"
-  />
+  <input type="text" name="q" value="{{ q }}"
+    placeholder="Search again (name + city helps)"
+    class="w-full sm:w-[420px] rounded-xl border bg-white px-4 py-2 text-sm shadow-sm focus:outline-none focus:ring" />
 
   <button class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-800">
     Search
   </button>
 
-  <a href="{% url 'place_detail' place.id %}" class="rounded-xl border bg-white px-4 py-2 text-sm shadow-sm hover:bg-slate-50">
+  <a href="{% url 'place_detail' place.id %}"
+     class="rounded-xl border bg-white px-4 py-2 text-sm shadow-sm hover:bg-slate-50">
     Cancel
   </a>
 </form>
@@ -43,12 +44,8 @@
   <div class="rounded-2xl border bg-white p-4 shadow-sm">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <div class="text-base font-semibold">
-          {{ r.display_name|truncatechars:90 }}
-        </div>
-        <div class="mt-1 text-xs text-slate-500">
-          Lat: {{ r.lat }} · Lon: {{ r.lon }}
-        </div>
+        <div class="text-base font-semibold">{{ r.display_name|truncatechars:90 }}</div>
+        <div class="mt-1 text-xs text-slate-500">Lat: {{ r.lat }} · Lon: {{ r.lon }}</div>
       </div>
 
       <form method="post" class="shrink-0">
@@ -56,7 +53,6 @@
         <input type="hidden" name="lat" value="{{ r.lat }}">
         <input type="hidden" name="lon" value="{{ r.lon }}">
         <input type="hidden" name="display_name" value="{{ r.display_name }}">
-
         <button class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700">
           Use this
         </button>
@@ -67,7 +63,7 @@
 </div>
 {% elif q %}
 <div class="rounded-2xl border bg-white p-6 text-slate-600">
-  No results found. Try a different keyword.
+  No results found. Try different keywords.
 </div>
 {% endif %}
 {% endblock %}

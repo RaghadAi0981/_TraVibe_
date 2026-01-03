@@ -167,3 +167,111 @@ def edit_place_location(request, place_id):
         "results": results,
         "error": error,
     })
+def nominatim_search(query: str):
+    url = "https://nominatim.openstreetmap.org/search"
+    params = {
+        "q": query,
+        "format": "json",
+        "addressdetails": 1,
+        "limit": 10,
+    }
+    headers = {
+        "User-Agent": "TraVibe-Django/1.0 (local-dev)",
+        "Accept-Language": "en",
+    }
+    r = requests.get(url, params=params, headers=headers, timeout=10)
+    r.raise_for_status()
+    return r.json()
+
+
+def add_place_search(request, city_id):
+    city = get_object_or_404(City, id=city_id)
+
+    q = request.GET.get("q", "").strip()
+    category = request.GET.get("category", "attraction").strip()
+
+    results = []
+    error = None
+
+    # GET: search results
+    if q and request.method == "GET":
+        try:
+            full_query = f"{q}, {city.name}, {city.country.name}"
+            results = nominatim_search(full_query)
+        except Exception as e:
+            error = str(e)
+
+    # POST: save selected result
+    if request.method == "POST":
+        name = request.POST.get("name", "").strip()
+        lat = request.POST.get("lat", "").strip()
+        lon = request.POST.get("lon", "").strip()
+        display_name = request.POST.get("display_name", "").strip()
+        category_post = request.POST.get("category", "attraction").strip()
+
+        if not name or not lat or not lon:
+            messages.error(request, "Missing location data. Please try again.")
+            return redirect("add_place", city_id=city.id)
+
+        maps_url = f"https://www.openstreetmap.org/?mlat={lat}&mlon={lon}#map=17/{lat}/{lon}"
+
+        place = Place.objects.create(
+            city=city,
+            name=name[:150],
+            category=category_post,
+            address=display_name[:255],
+            latitude=lat,
+            longitude=lon,
+            maps_url=maps_url,
+        )
+
+        messages.success(request, f"Saved: {place.name}")
+        return redirect("place_detail", place_id=place.id)
+
+    return render(request, "add_place.html", {
+        "city": city,
+        "q": q,
+        "category": category,
+        "results": results,
+        "error": error,
+    })
+
+
+def edit_place_location(request, place_id):
+    place = get_object_or_404(Place, id=place_id)
+
+    q = request.GET.get("q", "").strip()
+    results = []
+    error = None
+
+    if q and request.method == "GET":
+        try:
+            full_query = f"{q}, {place.city.name}, {place.city.country.name}"
+            results = nominatim_search(full_query)
+        except Exception as e:
+            error = str(e)
+
+    if request.method == "POST":
+        lat = request.POST.get("lat", "").strip()
+        lon = request.POST.get("lon", "").strip()
+        display_name = request.POST.get("display_name", "").strip()
+
+        if not lat or not lon:
+            messages.error(request, "Missing lat/lon. Please try again.")
+            return redirect("edit_place_location", place_id=place.id)
+
+        place.latitude = lat
+        place.longitude = lon
+        place.address = display_name[:255]
+        place.maps_url = f"https://www.openstreetmap.org/?mlat={lat}&mlon={lon}#map=17/{lat}/{lon}"
+        place.save()
+
+        messages.success(request, "Location updated.")
+        return redirect("place_detail", place_id=place.id)
+
+    return render(request, "edit_location.html", {
+        "place": place,
+        "q": q,
+        "results": results,
+        "error": error,
+    })
